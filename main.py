@@ -1,7 +1,7 @@
 import requests     #import requests library
 import urllib
 APP_ACCESS_TOKEN = '4870715640.a48e759.874aba351e5147eca8a9d36b9688f494'    #access token
-#APP_ACCESS_TOKEN= '1397099411.1436082.205d096159f742foae5b7d80389ef7cd'
+#APP_ACCESS_TOKEN= '4097850240.5b7c7d2.f1eb05309a9a44bf9ee156404b87c1f7'
 base_url='https://api.instagram.com/v1/'
 
 def self_info():
@@ -32,19 +32,29 @@ def recent_post():
 
 def get_user_id(username):
     req_url = requests.get("%susers/search?q=%s&access_token=%s" % (base_url,username, APP_ACCESS_TOKEN)).json()
-    return req_url['data'][0]['id']
+    if req_url['meta']['code'] == 200:
+        if len(req_url['data']):
+            return req_url['data'][0]['id']
+        else:
+            return None
+    else:
+        print "error"
 
 
 def user_info(username):
         user_id = get_user_id(username)
-        req_url= requests.get("%susers/%s/?access_token=%s"%(base_url,user_id,APP_ACCESS_TOKEN)).json()
-        if 'data' in req_url:
-            print 'Username: %s' % (req_url['data']['username'])
-            print 'No. of followers: %s' % (req_url['data']['counts']['followed_by'])
-            print 'No. of people you are following: %s' % (req_url['data']['counts']['follows'])
-            print 'No. of posts: %s' % (req_url['data']['counts']['media'])
+        if user_id == None:
+            print "user name is incorrect"
+            exit()
         else:
-                print "wrong information"
+            req_url= requests.get("%susers/%s/?access_token=%s"%(base_url,user_id,APP_ACCESS_TOKEN)).json()
+            if 'data' in req_url:
+                print 'Username: %s' % (req_url['data']['username'])
+                print 'No. of followers: %s' % (req_url['data']['counts']['followed_by'])
+                print 'No. of people you are following: %s' % (req_url['data']['counts']['follows'])
+                print 'No. of posts: %s' % (req_url['data']['counts']['media'])
+            else:
+                    print "wrong information"
 
 
 
@@ -55,11 +65,11 @@ def user_recent_post(name):
     if req_url['meta']['code'] == 200:  # code 200 is used to when information is access otherwise error occurs.
         if len(req_url['data'])>0:
             print req_url['data'][0]['id']
-            print req_url['data'][0]['images']['standard_resolution']['url']
-            name = req_url['data'][0]['id'] + ".jpg"
-            url = req_url['data'][0]['images']['standard_resolution']['url']
+            print req_url['data'][0]['videos']['standard_resolution']['url']
+            name = req_url['data'][0]['id'] + ".mp4"
+            url = req_url['data'][0]['videos']['standard_resolution']['url']
             urllib.urlretrieve(url, name)
-            print "image downloaded"
+            print "video downloaded"
         else:
             print "no user post"
     else:
