@@ -1,4 +1,4 @@
-import requests     #import requests library
+import requests     #import requests library to send http request
 import urllib
 from pprint import pprint
 from textblob import TextBlob
@@ -120,16 +120,20 @@ def delete_neg_comment(username):
 
     if comment_info['meta']['code'] == 200:
         if len(comment_info['data']):
-            #pprint(comment_info)
-            for index in range(0,len(comment_info['data'])):
-                comment_id = comment_info['data'][0]['id']
-                comment_text = comment_info['data'][0]['text']
+            pprint(comment_info)
+            for x in range(0,len(comment_info['data'])):
+                comment_id = comment_info['data'][x]['id']
+                comment_text = comment_info['data'][x]['text']
                 blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer())
-                blob.sentiment
-                if blob.sentiment.p_neg>blob.sentiment.p_pos:
-                    request_url = requests.get("%smedia/%s/comments/%s?access_token=%s" % (base_url, media_id,comment_id, APP_ACCESS_TOKEN)).json()
+                if (blob.sentiment.p_neg > blob.sentiment.p_pos):
+                    print "negative comment %s" % comment_text
+                    del_url = requests.delete("%smedia/%s/comments/%s?access_token=%s" % (base_url, media_id,comment_id, APP_ACCESS_TOKEN)).json()
                     # r = requests.delete("%smedia/{media-id}/comments/{comment-id}?access_token=%s").json()
-                    print "comment deleted"
+                    print "comment deleted:- %s" %(del_url)
+                    if del_url['meta']['code'] == 200:
+                        print 'Comment successfully deleted!\n'
+                    else:
+                        print 'Unable to delete comment!'
                 else:
                     print "comment positive"
         else:
