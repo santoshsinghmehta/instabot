@@ -1,15 +1,15 @@
 import requests     #import requests library to send http request
-import urllib
-from pprint import pprint
-from textblob import TextBlob
-from textblob.sentiments import NaiveBayesAnalyzer
+import urllib    #urllib is a Python module for fetching URLs
+from pprint import pprint   #The pprint module provides a capability to “pretty-print”
+from textblob import TextBlob       #TextBlob is a new python natural language processing toolkit.
+from textblob.sentiments import NaiveBayesAnalyzer      #TextBlob for sentiment analysis, by feeding the unique tweets and obtaining the sentiment polarity as output
 
 APP_ACCESS_TOKEN = '4870715640.a48e759.874aba351e5147eca8a9d36b9688f494'    #access token
 #APP_ACCESS_TOKEN= '4097850240.5b7c7d2.f1eb05309a9a44bf9ee156404b87c1f7'
-base_url='https://api.instagram.com/v1/'
+base_url='https://api.instagram.com/v1/'            #set base URL.
 
-def self_info():
-    req_url= requests.get("%susers/self/?access_token=%s"%(base_url,APP_ACCESS_TOKEN)).json()
+def self_info():        #define a function to user info.
+    req_url= requests.get("%susers/self/?access_token=%s"%(base_url,APP_ACCESS_TOKEN)).json()   #requests.get() is use to get all the information we need from this object
     if 'data' in req_url:
         print 'Username: %s' % (req_url['data']['username'])
         print 'No. of followers: %s' % (req_url['data']['counts']['followed_by'])
@@ -18,8 +18,8 @@ def self_info():
     else:
         print "wrong information"
 
-def recent_post():
-    req_url = requests.get("%susers/self/media/recent/?access_token=%s" % (base_url, APP_ACCESS_TOKEN)).json()
+def recent_post():      #define a function to recent owener post.
+    req_url = requests.get("%susers/self/media/recent/?access_token=%s" % (base_url, APP_ACCESS_TOKEN)).json()      #json() is convert to json format.
     if req_url['meta']['code'] == 200:  # code 200 is used to when information is access otherwise error occurs.
         if len(req_url['data'])>0:
             print req_url['data'][0]['id']
@@ -34,7 +34,7 @@ def recent_post():
         print "wrong information"
 
 
-def get_user_id(username):
+def get_user_id(username):                   #define user id.
     req_url = requests.get("%susers/search?q=%s&access_token=%s" % (base_url,username, APP_ACCESS_TOKEN)).json()
     if req_url['meta']['code'] == 200:
         if len(req_url['data']):
@@ -45,7 +45,7 @@ def get_user_id(username):
         print "error"
 
 
-def user_info(username):
+def user_info(username):            #define function to user info
         user_id = get_user_id(username)
         if user_id == None:
             print "user name is incorrect"
